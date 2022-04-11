@@ -53,7 +53,7 @@ class AuthorTest extends TestCase
 
         $response = $this->post('api/author',[
             'name' => 'Mart Twain'
-        ])->assertCreated();
+        ]);
 
         $this->assertDatabaseCount('authors', 1);
 
@@ -97,6 +97,15 @@ class AuthorTest extends TestCase
               'name'=>$author->name
             ]
         ]);
+    }
+
+    public function test_author_name_is_required()
+    {
+        $response = $this->post('api/author',[
+            'name' => ''
+        ]);
+
+        $response->assertSessionHasErrors(['name']);
     }
 
 }

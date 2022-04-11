@@ -29,12 +29,15 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $book = new Book;
-        $book->name = $request->name;
-        $book->author_id = $request->author;
-        $book->category_id = $request->category;
-        $book->publication_date = $request->publication_date;
-        $book->save();
+        $data = request()->validate([
+            'name' => 'required',
+            'author_id' => 'required',
+            'category_id' => 'required',
+            'publication_date' => 'required',
+            'user_id' =>''
+        ]);
+
+        $book = Book::create($data);
         return new BookResource($book);
     }
 
@@ -60,10 +63,11 @@ class BookController extends Controller
     public function update(Book $book)
     {
         $data = request()->validate([
-            'name' => '',
-            'author' => '',
-            'category' => '',
-            'publication_date' => ''
+            'name' => 'required',
+            'author_id' => 'required',
+            'category_id' => 'required',
+            'publication_date' => 'required',
+            'user_id' =>''
         ]);
 
         $book->update($data);

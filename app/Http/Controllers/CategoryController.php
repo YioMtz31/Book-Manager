@@ -27,10 +27,10 @@ class CategoryController extends Controller
     */
    public function store(Request $request)
    {
-      $data = request()->validate([
-          'name' => '',
-          'description' => ''
-      ]);
+    $data = request()->validate([
+        'name' => 'required',
+        'description' => 'required'
+    ]);
 
       $category = Category::create($data);
       return new CategoryResource($category);
@@ -45,8 +45,8 @@ class CategoryController extends Controller
     public function update(Category $category)
     {
         $data = request()->validate([
-            'name' => '',
-            'description' => ''
+            'name' => 'required',
+            'description' => 'required'
         ]);
 
         $category->update($data);

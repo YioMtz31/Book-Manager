@@ -125,4 +125,24 @@ class CategoryTest extends TestCase
 
         $response->assertOk();
     }
+
+    public function test_category_name_is_required()
+    {
+        $response = $this->post('api/category',[
+            'name' => '',
+            'description' => "sample description"
+        ]);
+
+        $response->assertSessionHasErrors(['name']);
+    }
+
+    public function test_category_description_is_required()
+    {
+        $response = $this->post('api/category',[
+            'name' => 'Sample name',
+            'description' =>''
+        ]);
+
+        $response->assertSessionHasErrors(['description']);
+    }
 }

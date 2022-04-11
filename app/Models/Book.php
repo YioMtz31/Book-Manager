@@ -18,7 +18,8 @@ class Book extends Model
         'name',
         'author_id',
         'category_id',
-        'publication_date'
+        'publication_date',
+        'user_id'
     ];
 
     /**

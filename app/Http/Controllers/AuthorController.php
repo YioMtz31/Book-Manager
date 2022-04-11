@@ -25,11 +25,13 @@ class AuthorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        $author = new Author;
-        $author->name = $request->name;
-        $author->save();
+        $data = request()->validate([
+            'name' => 'required'
+        ]);
+
+        $author = Author::create($data);
         return new AuthorResource($author);
     }
 
@@ -42,7 +44,7 @@ class AuthorController extends Controller
     public function update(Author $author)
     {
         $data = request()->validate([
-            'name' => ''
+            'name' => 'required'
         ]);
 
         $author->update($data);

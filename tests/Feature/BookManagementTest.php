@@ -77,8 +77,8 @@ class BookManagementTest extends TestCase
 
         $response = $this->post('/api/books',[
             'name' => 'Tom Sawyer',
-            'author' => 1,
-            'category' => 1,
+            'author_id' => 1,
+            'category_id' => 1,
             'publication_date' => '2020-04-15'
         ]);
 
@@ -104,11 +104,12 @@ class BookManagementTest extends TestCase
             'name' => 'Adventure',
             'description' => 'Some texts'
         ]);
+        $category_id->assertJsonFragment(['id' => 1]);
 
         $this->post('/api/books',[
             'name' => 'Tom Sawyer',
-            'author' => 1,
-            'category' => 1,
+            'author_id' => 1,
+            'category_id' => 1,
             'publication_date' => '2020-04-15'
         ]);
 
@@ -118,9 +119,10 @@ class BookManagementTest extends TestCase
 
         $response = $this->put('/api/books/'.$book->id,[
             'name' => 'Huck Finn',
-            'author' => 1,
-            'category' => 1,
-            'publication_date' => '2020-04-15'
+            'author_id' => $book->author->id,
+            'category_id' => $book->category->id,
+            'publication_date' => $book->publication_date,
+            'user_id' => $book->user ? $book->user->id : null
         ]);
 
         $this->assertDatabaseCount('books', 1);
@@ -134,8 +136,12 @@ class BookManagementTest extends TestCase
 
         $response->assertJson([
             "data"=> [
-              "id"=> $book->id,
-              'name'=>$book->name
+              "id"=> 1,
+              'name'=>'Huck Finn',
+              'author_id' => 1,
+              'category_id' => 1,
+              'publication_date' => '2020-04-15',
+              'user_id' =>  null
             ]
         ]);
     }
@@ -169,5 +175,18 @@ class BookManagementTest extends TestCase
         $this->assertDatabaseCount('books', 1);
 
         $response->assertOk();
+    }
+
+    public function test_book_fields_are_required()
+    {
+        $response =   $this->post('/api/books',[
+            'name' => '',
+            'author_id' => '',
+            'category_id' => '',
+            'publication_date' => ''
+        ]);
+
+
+        $response->assertSessionHasErrors(['name','author_id','category_id','publication_date']);
     }
 }
