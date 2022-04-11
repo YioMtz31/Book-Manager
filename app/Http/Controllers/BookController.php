@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use App\http\Resources\BookResource;
+use App\http\Resources\BooksCollection;
 
 class BookController extends Controller
 {
@@ -15,17 +17,8 @@ class BookController extends Controller
     public function index()
     {
         //get all books
-      return Book::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+      $books = Book::all();
+      return new BooksCollection($books);
     }
 
     /**
@@ -42,7 +35,7 @@ class BookController extends Controller
         $book->category_id = $request->category;
         $book->publication_date = $request->publication_date;
         $book->save();
-        return $book;
+        return new BookResource($book);
     }
 
     /**
@@ -56,16 +49,6 @@ class BookController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -74,9 +57,17 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Book $book)
     {
-        //
+        $data = request()->validate([
+            'name' => '',
+            'author' => '',
+            'category' => '',
+            'publication_date' => ''
+        ]);
+
+        $book->update($data);
+        return new BookResource($book);
     }
 
     /**
@@ -87,6 +78,8 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $book = Book::find($id);
+        $response = $book->delete();
+        return $response;
     }
 }

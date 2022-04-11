@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Book;
 use App\Models\Author;
 use App\Models\Category;
+use App\Http\Resources\BookResource;
+use App\Http\Resources\BooksCollention;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -23,7 +25,7 @@ class BookManagementTest extends TestCase
         $this->withoutExceptionHandling();
 
         $books = Book::factory()
-            ->count(3)
+            ->count(2)
             ->for(Author::factory()->state([
                 'name' => 'Jessica Archer',
             ]))
@@ -33,15 +35,25 @@ class BookManagementTest extends TestCase
             ]))
             ->create();
 
-        $this->assertDatabaseCount('books', 3);
+        $this->assertDatabaseCount('books', 2);
 
-        $this->assertCount(3,Book::all());
+        $this->assertCount(2,Book::all());
+        $books = Book::all();
 
         $response = $this->get('/api/books');
 
-        $response
-            ->assertStatus(200)
-            ->assertJsonCount(3, $key = null);
+            $response->assertJson([
+                "data"=> [
+                    [
+                      "id"=> $books->first()->id,
+                      "name"=> $books->first()->name,
+                    ],
+                    [
+                      "id"=> $books->last()->id,
+                      "name"=> $books->last()->name,
+                    ],
+                  ]
+            ]);
     }
 
      /**
@@ -72,5 +84,90 @@ class BookManagementTest extends TestCase
 
         $this->assertDatabaseCount('books', 1);
 
+    }
+
+     /**
+     * Can edit a book
+     *
+     * @return void
+     */
+    public function test_a_book_can_be_edited()
+    {
+        $this->withoutExceptionHandling();
+
+        $author = $this->post('/api/author',[
+            'name' => 'Mark Twain',
+        ]);
+        $author->assertJsonFragment(['id' => 1]);
+
+        $category_id = $this->post('/api/category',[
+            'name' => 'Adventure',
+            'description' => 'Some texts'
+        ]);
+
+        $this->post('/api/books',[
+            'name' => 'Tom Sawyer',
+            'author' => 1,
+            'category' => 1,
+            'publication_date' => '2020-04-15'
+        ]);
+
+        $this->assertDatabaseCount('books', 1);
+
+        $book = Book::first();
+
+        $response = $this->put('/api/books/'.$book->id,[
+            'name' => 'Huck Finn',
+            'author' => 1,
+            'category' => 1,
+            'publication_date' => '2020-04-15'
+        ]);
+
+        $this->assertDatabaseCount('books', 1);
+
+        $book = $book->fresh();
+
+        $this->assertEquals($book->name, 'Huck Finn');
+        $this->assertEquals($book->author->id, 1);
+        $this->assertEquals($book->category->id, 1);
+        $this->assertEquals($book->publication_date, '2020-04-15');
+
+        $response->assertJson([
+            "data"=> [
+              "id"=> $book->id,
+              'name'=>$book->name
+            ]
+        ]);
+    }
+
+      /**
+     * can delete a book
+     *
+     * @return void
+     */
+    public function test_can_delete_book()
+    {
+        $this->withoutExceptionHandling();
+
+        Book::factory()
+            ->count(2)
+            ->for(Author::factory()->state([
+                'name' => 'Jessica Archer',
+            ]))
+            ->for(Category::factory()->state([
+                'name' => 'Action',
+                'description' => 'Super heroe stuff'
+            ]))
+            ->create();
+
+        $this->assertDatabaseCount('books', 2);
+
+        $book = Book::first();
+
+        $response = $this->delete('api/books/'.$book->id);
+
+        $this->assertDatabaseCount('books', 1);
+
+        $response->assertOk();
     }
 }
