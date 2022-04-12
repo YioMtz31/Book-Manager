@@ -22,6 +22,8 @@ class Book extends Model
         'user_id'
     ];
 
+    protected $with = ['author', 'category','user'];
+
     /**
      * Get the author associated with the book.
      */
@@ -38,5 +40,12 @@ class Book extends Model
         return $this->belongsTo(Category::class);
     }
 
-    protected $with = ['author', 'category'];
+    /**
+     * Get the user associated with the book.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }
