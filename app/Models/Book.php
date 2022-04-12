@@ -37,4 +37,6 @@ class Book extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    protected $with = ['author', 'category'];
 }
