@@ -18,12 +18,12 @@ use App\Http\Controllers\UsersController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    Route::apiResource('users',UsersController::class);
+    Route::apiResource('author',AuthorController::class);
+    Route::apiResource('category',CategoryController::class);
+    Route::apiResource('books',BookController::class);
 
-Route::apiResource('users',UsersController::class);//remove if authentication needed
-Route::apiResource('author',AuthorController::class);
-Route::apiResource('category',CategoryController::class);
-Route::apiResource('books',BookController::class);
+});
+
 
