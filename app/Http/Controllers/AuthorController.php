@@ -13,9 +13,21 @@ class AuthorController extends Controller
     /**
      * Get all authors
      */
-    public function index()
+    public function index(Request $request)
     {
-        $authors = Author::all();
+        $columns = ['id','name'];
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+
+        $query = Author::select('id','name')->orderBy($columns[$column],$dir);
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $authors = $query->paginate($request->length);
         return new AuthorCollection($authors);
     }
 

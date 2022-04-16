@@ -15,7 +15,8 @@ class AuthorCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection
+            'data' => $this->collection,
+            'draw' =>$request->draw
         ];
     }
 }
