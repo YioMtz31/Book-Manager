@@ -59,7 +59,39 @@
                         <td>
                             {{ book.user ? book.user.name : "" }}
                         </td>
-                        <td>actions</td>
+                        <td>
+                            <div
+                                class="d-flex justify-content-between align-items-center px-2"
+                            >
+                                <i
+                                    class="bi bi-person-check text-primary"
+                                    :class="book.user ? 'text-secondary' : ''"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Assign User"
+                                ></i>
+                                <button
+                                    class="btn btn-link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Assign User"
+                                    @click="editBook(book)"
+                                >
+                                    <i
+                                        class="bi bi-pencil-square text-success"
+                                    ></i>
+                                </button>
+                                <button
+                                    class="btn btn-link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Assign User"
+                                    @click="deleteBook(book)"
+                                >
+                                    <i class="bi bi-trash text-danger"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </DataTables>
@@ -68,6 +100,17 @@
                 @prev="getBooks(pagination.prevPageUrl)"
                 @next="getBooks(pagination.nextPageUrl)"
             />
+            <Modal
+                :show-modal="showModal"
+                @closeModal="showModal = false"
+                :title="modal.title"
+                ><component
+                    :is="currentComponent"
+                    v-if="showModal"
+                    :modal-data="modal"
+                    @deleted="getBooks()"
+                ></component>
+            </Modal>
         </template>
     </main-component>
 </template>
@@ -76,11 +119,17 @@
 import MainComponent from "../MainComponent.vue";
 import DataTables from "../datatables/DataTables.vue";
 import Pagination from "../datatables/Pagination.vue";
+import Modal from "../Modal.vue";
+import DeleteComponent from "../Modals/delete.vue";
+import BookForm from "../Modals/BookForm.vue";
 export default {
     components: {
         DataTables,
         Pagination,
         MainComponent,
+        Modal,
+        DeleteComponent,
+        BookForm,
     },
     data() {
         let sortOrders = {};
@@ -118,6 +167,7 @@ export default {
             sortOrders[column.name] = -1;
         });
         return {
+            currentComponent: "",
             loading: true,
             books: [],
             columns: columns,
@@ -141,6 +191,8 @@ export default {
                 from: "",
                 to: "",
             },
+            showModal: false,
+            modal: {},
         };
     },
     created() {
@@ -191,6 +243,18 @@ export default {
         },
         getIndex(array, key, value) {
             return array.findIndex((i) => i[key] == value);
+        },
+        deleteBook(book) {
+            this.currentComponent = "DeleteComponent";
+            this.showModal = true;
+            this.modal.title = "Delete Book";
+            this.modal.book = book;
+        },
+        editBook(book) {
+            this.currentComponent = "BookForm";
+            this.showModal = true;
+            this.modal.title = "Edit Book";
+            this.modal.book = book;
         },
     },
 };
