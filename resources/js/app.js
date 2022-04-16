@@ -12,6 +12,7 @@ import routes from "./routes";
 import VueCompositionAPI from "@vue/composition-api";
 import store from "./store";
 import PortalVue from "portal-vue";
+import vSelect from "vue-select";
 
 Vue.use(VueCompositionAPI);
 Vue.use(VueRouter);
@@ -43,6 +44,13 @@ axios.interceptors.response.use(undefined, function axiosRetryInterceptor(err) {
     }
     return Promise.reject(err);
 });
+
+/**
+ * Register an event bus to communicate between components without going thru parent or the store
+ */
+export const eventBus = new Vue();
+
+Vue.component("v-select", vSelect);
 
 const app = new Vue({
     el: "#app",

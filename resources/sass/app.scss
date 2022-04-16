@@ -10,5 +10,10 @@
 // Bootstrap icons
 @import '~bootstrap-icons/font/bootstrap-icons.scss';
 
+/**
+*This pulls in the css for the vue-select component
+*/
+@import "~vue-select/dist/vue-select.css";
+
 // custom css
 @import '../css/app.css';
