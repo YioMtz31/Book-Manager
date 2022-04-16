@@ -31,6 +31,25 @@ class CategoryController extends Controller
         return new CategoryCollection($categories);
     }
 
+
+
+    /**
+     * categories list for select box
+     */
+    public function show(Request $request)
+    {
+        $searchValue = $request->search;
+        $query = Category::select('id','name');
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $categories = $query->paginate($request->length);
+        return new CategoryCollection($categories);
+    }
+
   /**
     * Store a newly created resource in storage.
     *

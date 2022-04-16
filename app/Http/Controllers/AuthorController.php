@@ -32,6 +32,23 @@ class AuthorController extends Controller
     }
 
     /**
+     * authors list for select box
+     */
+    public function show(Request $request)
+    {
+        $searchValue = $request->search;
+        $query = Author::select('id','name');
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $authors = $query->paginate($request->length);
+        return new AuthorCollection($authors);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
