@@ -17,13 +17,11 @@ use App\Http\Controllers\UsersController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('users',UsersController::class);
     Route::apiResource('author',AuthorController::class);
     Route::apiResource('category',CategoryController::class);
     Route::apiResource('books',BookController::class);
-
 });
 
 
