@@ -18,7 +18,7 @@
                         class="form-control w-100 d-block"
                         type="text"
                         placeholder="Search"
-                        @input="getAuthors(searchUrl)"
+                        @input="getAuthors()"
                     />
                 </label>
             </portal>
@@ -90,7 +90,6 @@ export default {
             sortOrders[column.name] = -1;
         });
         return {
-            searchUrl: "api/authors",
             loading: true,
             authors: [],
             columns: columns,

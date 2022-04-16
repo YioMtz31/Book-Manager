@@ -9,10 +9,13 @@
                             type="text"
                             class="form-control"
                             :class="
-                                v$.name.$error ? 'border border-danger' : ''
+                                v$.name.$error || state.serverError.status
+                                    ? 'border border-danger'
+                                    : ''
                             "
                             id="floatingInput"
                             placeholder="Please type Author name"
+                            v-on:keydown.enter.prevent="submitForm"
                         />
                         <label for="floatingInput"
                             >Please type Author name</label
@@ -25,6 +28,12 @@
                             <div class="text-start text-danger">
                                 {{ error.$message }}
                             </div>
+                        </div>
+                        <div
+                            v-if="state.serverError.status"
+                            class="text-start text-danger"
+                        >
+                            {{ state.serverError.message }}
                         </div>
                     </div>
                     <button
@@ -44,7 +53,7 @@
 import MainComponent from "../MainComponent.vue";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { reactive } from "@vue/composition-api";
+import { reactive, watch } from "@vue/composition-api";
 
 export default {
     components: {
@@ -55,12 +64,25 @@ export default {
             name: "",
             password: "",
             password_confirmation: "",
+            serverError: {
+                status: false,
+                message: "",
+            },
         });
         const rules = {
             name: { required },
         };
 
         const v$ = useVuelidate(rules, state);
+        watch(
+            () => state.name,
+            (currentValue, oldValue) => {
+                if (state.serverError.status) {
+                    state.serverError.status = false;
+                    state.serverError.message = "";
+                }
+            }
+        );
 
         return { state, v$ };
     },
@@ -80,8 +102,10 @@ export default {
                 .then((response) => {
                     this.$router.push("/authors");
                 })
-                .catch(function (error) {
-                    console.log(error);
+                .catch((error) => {
+                    this.state.serverError.status = true;
+                    this.state.serverError.message =
+                        error.response.data.message;
                 });
         },
     },
