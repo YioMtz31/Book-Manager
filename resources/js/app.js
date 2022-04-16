@@ -33,7 +33,16 @@ router.beforeEach((to, from, next) => {
 });
 
 axios.default.withCredentials = true;
-axios.get("/sanctum/csrf-cookie");
+axios.interceptors.response.use(undefined, function axiosRetryInterceptor(err) {
+    if (
+        err.response.status === 401 ||
+        err.response.data.message === "Unauthenticated"
+    ) {
+        store.dispatch("signout");
+        router.push("/login");
+    }
+    return Promise.reject(err);
+});
 
 const app = new Vue({
     el: "#app",

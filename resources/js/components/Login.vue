@@ -92,20 +92,23 @@ export default {
             const isFormCorrect = await this.v$.$validate();
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (!isFormCorrect) return;
-            axios
-                .post("/login", {
-                    email: this.state.email,
-                    password: this.state.password,
-                })
-                .then((response) => {
-                    if (response.status === 200) {
-                        this.$store.commit("setIsAuthenticated", true);
-                        this.$router.push("/");
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            axios.get("/sanctum/csrf-cookie").then((response) => {
+                // Login...
+                axios
+                    .post("/login", {
+                        email: this.state.email,
+                        password: this.state.password,
+                    })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            this.$store.commit("setIsAuthenticated", true);
+                            this.$router.push("/");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            });
         },
     },
 };
