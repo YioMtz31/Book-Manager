@@ -14,11 +14,34 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //get all books
-      $books = Book::all();
-      return new BooksCollection($books);
+        $columns = ['id','name','author_id','category_id','user_id','publication_date'];
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+
+        $query = Book::select('id','name','author_id','category_id','user_id','publication_date')->orderBy($columns[$column],$dir);
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+            $query->orWhere(function($query) use ($searchValue){
+                $query->where('publication_date','like','%'.$searchValue.'%');
+            });
+            $query->orWhereHas('category', function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+            $query->orWhereHas('author', function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+            $query->orWhereHas('user', function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $books = $query->paginate($request->length);
+        return new BooksCollection($books);
     }
 
     /**

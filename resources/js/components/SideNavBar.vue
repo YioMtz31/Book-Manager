@@ -6,18 +6,14 @@
         <div class="position-sticky pt-3">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <router-link
-                        class="nav-link active"
-                        aria-current="page"
-                        :to="'/'"
-                    >
+                    <router-link class="nav-link" aria-current="page" :to="'/'">
                         <span data-feather="home"></span>
-                        Dashboard
+                        Books
                     </router-link>
                 </li>
                 <li class="nav-item">
                     <router-link
-                        class="nav-link active"
+                        class="nav-link"
                         aria-current="page"
                         :to="'/authors'"
                     >
@@ -26,10 +22,14 @@
                     </router-link>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <span data-feather="shopping-cart"></span>
+                    <router-link
+                        class="nav-link active"
+                        aria-current="page"
+                        :to="'/Categories'"
+                    >
+                        <span data-feather="home"></span>
                         Categories
-                    </a>
+                    </router-link>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" @click.prevent="signOut">

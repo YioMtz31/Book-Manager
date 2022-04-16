@@ -1,4 +1,4 @@
-const Dashboard = () => import("./components/Dashboard");
+const BooksTable = () => import("./components/Books/BooksTable");
 const Login = () => import("./components/Login");
 const Register = () => import("./components/Register");
 const Authors = () => import("./components/Authors/AuthorsTable");
@@ -9,11 +9,11 @@ const Category = () => import("./components/Categories/CreateCategory");
 const routes = [
     {
         path: "/",
-        redirect: "/dashboard",
+        redirect: "/books",
     },
     {
-        path: "/dashboard",
-        component: Dashboard,
+        path: "/books",
+        component: BooksTable,
     },
     {
         name: "login",

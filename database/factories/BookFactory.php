@@ -3,10 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Author;
+use App\Models\Category;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Book>
- */
 class BookFactory extends Factory
 {
        /**
@@ -18,6 +17,8 @@ class BookFactory extends Factory
     {
         return [
             'name' => $this->faker->sentence(),
+            'author_id' =>Author::factory()->create()->getKey(),
+            'category_id' =>Category::factory()->create()->getKey(),
             'publication_date' => $this->faker->date(),
         ];
     }
