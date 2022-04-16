@@ -9,9 +9,13 @@ require("./bootstrap");
 window.Vue = require("vue").default;
 import VueRouter from "vue-router";
 import routes from "./routes";
+import VueCompositionAPI from "@vue/composition-api";
+import store from "./store";
+import PortalVue from "portal-vue";
 
-const isAuthenticated = false;
+Vue.use(VueCompositionAPI);
 Vue.use(VueRouter);
+Vue.use(PortalVue);
 
 const router = new VueRouter({
     mode: "history",
@@ -19,12 +23,20 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if (to.name !== "login" && !isAuthenticated) next({ path: "login" });
-    else next();
+    if (to.name !== "login" && !store.state.isAuthenticated) {
+        next({ path: "login" });
+    } else if (to.name === "login" && store.state.isAuthenticated) {
+        next({ path: "dashboard" });
+    } else {
+        next();
+    }
 });
+
+axios.default.withCredentials = true;
+axios.get("/sanctum/csrf-cookie");
 
 const app = new Vue({
     el: "#app",
-    //  store,
+    store,
     router,
 });
