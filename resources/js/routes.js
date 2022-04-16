@@ -3,6 +3,8 @@ const Login = () => import("./components/Login");
 const Register = () => import("./components/Register");
 const Authors = () => import("./components/Authors/AuthorsTable");
 const Author = () => import("./components/Authors/CreateAuthor");
+const Categories = () => import("./components/Categories/CategoriesTable");
+const Category = () => import("./components/Categories/CreateCategory");
 
 const routes = [
     {
@@ -32,6 +34,16 @@ const routes = [
         name: "Author",
         path: "/author",
         component: Author,
+    },
+    {
+        name: "Categories",
+        path: "/categories",
+        component: Categories,
+    },
+    {
+        name: "Category",
+        path: "/Category",
+        component: Category,
     },
 ];
 

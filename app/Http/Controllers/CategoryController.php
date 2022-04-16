@@ -13,9 +13,21 @@ class CategoryController extends Controller
       /**
      * Get all categories
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::all();
+        $columns = ['id','name','description'];
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+
+        $query = Category::select('id','name','description')->orderBy($columns[$column],$dir);
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $categories = $query->paginate($request->length);
         return new CategoryCollection($categories);
     }
 
@@ -29,6 +41,7 @@ class CategoryController extends Controller
    {
     $data = request()->validate([
         'name' => 'required',
+        'name' => 'unique:App\Models\Category,name',
         'description' => 'required'
     ]);
 

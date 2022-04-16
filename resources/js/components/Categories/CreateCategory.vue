@@ -9,17 +9,15 @@
                             type="text"
                             class="form-control"
                             :class="
-                                v$.name.$error || state.serverError.status
+                                v$.name.$error || state.serverError.errors.name
                                     ? 'border border-danger'
                                     : ''
                             "
                             id="floatingInput"
-                            placeholder="Please type Author name"
+                            placeholder="Please type Category name"
                             v-on:keydown.enter.prevent="submitForm"
                         />
-                        <label for="floatingInput"
-                            >Please type Author name</label
-                        >
+                        <label for="floatingInput">Category name</label>
                         <div
                             class="input-errors"
                             v-for="error of v$.name.$errors"
@@ -29,11 +27,49 @@
                                 {{ error.$message }}
                             </div>
                         </div>
+                    </div>
+                    <div class="form-floating m-2">
+                        <input
+                            v-model.trim="state.description"
+                            type="text"
+                            class="form-control"
+                            :class="
+                                v$.description.$error ||
+                                state.serverError.errors.description
+                                    ? 'border border-danger'
+                                    : ''
+                            "
+                            id="floatingInput"
+                            placeholder="Please type Category Description"
+                            v-on:keydown.enter.prevent="submitForm"
+                        />
+                        <label for="floatingInput">Category Description</label>
                         <div
-                            v-if="state.serverError.status"
-                            class="text-start text-danger"
+                            class="input-errors"
+                            v-for="error of v$.description.$errors"
+                            :key="error.$uid"
                         >
-                            {{ state.serverError.message }}
+                            <div class="text-start text-danger">
+                                {{ error.$message }}
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        v-if="state.serverError.status"
+                        class="text-start text-danger"
+                    >
+                        <div
+                            class="input-errors"
+                            v-for="(errors, index) of state.serverError.errors"
+                            :key="index"
+                        >
+                            <div
+                                v-for="(error, i) of errors"
+                                :key="i"
+                                class="text-start text-danger"
+                            >
+                                {{ error }}
+                            </div>
                         </div>
                     </div>
                     <button
@@ -62,13 +98,15 @@ export default {
     setup() {
         const state = reactive({
             name: "",
+            description: "",
             serverError: {
                 status: false,
-                message: "",
+                errors: [],
             },
         });
         const rules = {
             name: { required },
+            description: { required },
         };
 
         const v$ = useVuelidate(rules, state);
@@ -77,7 +115,7 @@ export default {
             (currentValue, oldValue) => {
                 if (state.serverError.status) {
                     state.serverError.status = false;
-                    state.serverError.message = "";
+                    state.serverError.errors = [];
                 }
             }
         );
@@ -85,7 +123,7 @@ export default {
         return { state, v$ };
     },
     mounted() {
-        this.$store.commit("setPageTitle", "Add New Author");
+        this.$store.commit("setPageTitle", "Add New Category");
     },
     methods: {
         async submitForm() {
@@ -94,16 +132,16 @@ export default {
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (!isFormCorrect) return;
             axios
-                .post("/api/author", {
+                .post("/api/category", {
                     name: this.state.name,
+                    description: this.state.description,
                 })
                 .then((response) => {
-                    this.$router.push("/authors");
+                    this.$router.push("/categories");
                 })
                 .catch((error) => {
                     this.state.serverError.status = true;
-                    this.state.serverError.message =
-                        error.response.data.message;
+                    this.state.serverError.errors = error.response.data.errors;
                 });
         },
     },
