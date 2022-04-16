@@ -6,16 +6,24 @@
         <div class="position-sticky pt-3">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">
+                    <router-link
+                        class="nav-link active"
+                        aria-current="page"
+                        :to="'/'"
+                    >
                         <span data-feather="home"></span>
                         Dashboard
-                    </a>
+                    </router-link>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <span data-feather="file"></span>
+                    <router-link
+                        class="nav-link active"
+                        aria-current="page"
+                        :to="'/authors'"
+                    >
+                        <span data-feather="home"></span>
                         Authors
-                    </a>
+                    </router-link>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">
@@ -24,9 +32,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="#" @click.prevent="signOut">
                         <span data-feather="users"></span>
-                        Customers
+                        Sign Out
                     </a>
                 </li>
             </ul>
@@ -35,7 +43,15 @@
 </template>
 
 <script>
-export default {};
+export default {
+    methods: {
+        async signOut() {
+            if (await this.$store.dispatch("signout")) {
+                this.$router.push("/login");
+            }
+        },
+    },
+};
 </script>
 
 <style></style>
