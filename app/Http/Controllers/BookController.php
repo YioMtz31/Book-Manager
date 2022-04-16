@@ -105,8 +105,8 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
+        $id = intval($id);
         $book = Book::find($id);
-        $response = $book->delete();
-        return $response;
+        return $response = $book->delete();
     }
 }
