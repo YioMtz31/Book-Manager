@@ -22,6 +22,31 @@
                     />
                 </label>
             </portal>
+            <div class="d-flex justify-content-evenly">
+                <div class="w-25 mx-3">
+                    <Select
+                        v-model="tableData.authorFilter"
+                        url="api/author"
+                        :selected="tableData.authorFilter"
+                        v-on:optionSelected="setAuthorFilter"
+                    />
+                </div>
+                <div class="w-25 mx-3">
+                    <Select
+                        v-model="tableData.categoryFilter"
+                        url="api/category"
+                        :selected="tableData.categoryFilter"
+                        v-on:optionSelected="setCategoryFilter"
+                    />
+                </div>
+                <button
+                    type="button"
+                    @click="filterList"
+                    class="w-auto mx-3 btn btn-primary"
+                >
+                    Filter
+                </button>
+            </div>
             <DataTables
                 :columns="columns"
                 :sort-key="sortKey"
@@ -142,6 +167,7 @@ import Modal from "../Modal.vue";
 import DeleteComponent from "../Modals/delete.vue";
 import BookForm from "../Modals/BookForm.vue";
 import CheckoutForm from "../Modals/CheckoutForm.vue";
+import Select from "../SelectComponent.vue";
 export default {
     components: {
         DataTables,
@@ -151,6 +177,7 @@ export default {
         DeleteComponent,
         BookForm,
         CheckoutForm,
+        Select,
     },
     data() {
         let sortOrders = {};
@@ -205,6 +232,8 @@ export default {
                 search: "",
                 column: 0,
                 dir: "asc",
+                categoryFilter: "",
+                authorFilter: "",
             },
             pagination: {
                 lastPage: "",
@@ -225,6 +254,9 @@ export default {
         this.getBooks();
     },
     methods: {
+        filterList() {
+            this.getBooks();
+        },
         async getBooks(url = "/api/books") {
             this.tableData.draw++;
             return await axios
@@ -286,6 +318,12 @@ export default {
             this.showModal = true;
             this.modal.title = "Burrow Book";
             this.modal.book = book;
+        },
+        setCategoryFilter(id) {
+            this.tableData.categoryFilter = id;
+        },
+        setAuthorFilter(id) {
+            this.tableData.authorFilter = id;
         },
     },
 };

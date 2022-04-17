@@ -18,6 +18,8 @@ class BookController extends Controller
     {
         $columns = ['id','name','author_id','category_id','publication_date','user_id'];
         $column = $request->column;
+        $categoryFilter = $request->categoryFilter;
+        $authorFilter = $request->authorFilter;
         $dir = $request->dir;
         $searchValue = $request->search;
 
@@ -40,6 +42,18 @@ class BookController extends Controller
                 $query->where('name','like','%'.$searchValue.'%');
             });
         }
+        if($categoryFilter){
+            $query->where(function($query) use ($categoryFilter){
+                $query->where('category_id',$categoryFilter);
+            });
+        }
+
+        if($authorFilter){
+            $query->where(function($query) use ($authorFilter){
+                $query->where('author_id',$authorFilter);
+            });
+        }
+
         $books = $query->paginate($request->length);
         return new BooksCollection($books);
     }
