@@ -23,8 +23,6 @@ import Navigation from "./SideNavBar.vue";
 export default {
     name: "mainPage",
     components: { Navigation },
-    mounted() {
-        console.log("Component mounted.");
-    },
+    mounted() {},
 };
 </script>

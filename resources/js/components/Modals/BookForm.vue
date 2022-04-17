@@ -30,6 +30,7 @@
             <Select
                 v-model="state.author_id"
                 url="api/author"
+                :selected="state.author_id"
                 v-on:optionSelected="setAuthor"
             />
             <div
@@ -43,15 +44,60 @@
             </div>
         </div>
         <div class="m-2">
-            <label for="Author">Book Category</label>
+            <label for="Category">Book Category</label>
             <Select
                 v-model="state.category_id"
                 url="api/category"
+                :selected="state.category_id"
                 v-on:optionSelected="setCategory"
             />
             <div
                 class="input-errors"
                 v-for="error of v$.category_id.$errors"
+                :key="error.$uid"
+            >
+                <div class="text-start text-danger">
+                    {{ error.$message }}
+                </div>
+            </div>
+        </div>
+        <div class="m-2">
+            <label for="publication-date">Publication Date</label>
+            <input
+                v-model.trim="state.publication_date"
+                type="text"
+                class="form-control"
+                :class="
+                    v$.publication_date.$error ||
+                    state.serverError.errors.publication_date
+                        ? 'border border-danger'
+                        : ''
+                "
+                id="publication-date"
+                placeholder="yyyy-mm-dd"
+                v-on:keydown.enter.prevent="submitForm"
+            />
+            <div
+                class="input-errors"
+                v-for="error of v$.publication_date.$errors"
+                :key="error.$uid"
+            >
+                <div class="text-start text-danger">
+                    {{ error.$message }}
+                </div>
+            </div>
+        </div>
+        <div class="m-2">
+            <label for="borrowed-book">Borrowed Book By</label>
+            <Select
+                v-model="state.user_id"
+                url="api/users"
+                :selected="state.user_id"
+                v-on:optionSelected="setUser"
+            />
+            <div
+                class="input-errors"
+                v-for="error of v$.user_id.$errors"
                 :key="error.$uid"
             >
                 <div class="text-start text-danger">
@@ -88,16 +134,31 @@ import useVuelidate from "@vuelidate/core";
 import { required, integer } from "@vuelidate/validators";
 import { reactive, watch } from "@vue/composition-api";
 import Select from "../SelectComponent.vue";
+import { eventBus } from "../../app";
 
 export default {
     components: { Select },
-    setup() {
+    props: {
+        modalData: {
+            type: Object,
+            default: function () {
+                return {};
+            },
+        },
+    },
+    setup(props) {
         const state = reactive({
-            name: "",
-            author_id: "",
-            category_id: "",
-            publication_date: "",
-            user_id: "",
+            name: props.modalData.book ? props.modalData.book.name : "",
+            author_id: props.modalData.book
+                ? props.modalData.book.author_id
+                : "",
+            category_id: props.modalData.book
+                ? props.modalData.book.category_id
+                : "",
+            publication_date: props.modalData.book
+                ? props.modalData.book.publication_date
+                : "",
+            user_id: props.modalData.book ? props.modalData.book.user_id : "",
             serverError: {
                 status: false,
                 errors: [],
@@ -112,19 +173,29 @@ export default {
         };
 
         const v$ = useVuelidate(rules, state);
-        watch(
-            () => state.name,
-            (currentValue, oldValue) => {
-                if (state.serverError.status) {
-                    state.serverError.status = false;
-                    state.serverError.errors = [];
-                }
-            }
-        );
-
         return { state, v$ };
     },
+    mounted() {},
     methods: {
+        submitForm() {
+            if (!this.isEmpty(this.modalData.book)) {
+                this.updateBook(this.modalData.book.id);
+            } else {
+                this.submitBook();
+            }
+        },
+        isEmpty(obj) {
+            if (!obj) {
+                return true;
+            }
+            if (
+                obj.constructor === Object &&
+                Object.entries(obj).length === 0
+            ) {
+                return true;
+            }
+            return false;
+        },
         setAuthor(id) {
             this.state.author_id = id;
         },
@@ -134,7 +205,7 @@ export default {
         setUser(id) {
             this.state.user_id = id;
         },
-        async submitForm() {
+        async submitBook() {
             this.v$.$reset();
             const isFormCorrect = await this.v$.$validate();
             if (!isFormCorrect) return;
@@ -147,9 +218,36 @@ export default {
                     user_id: this.state.user_id,
                 })
                 .then((response) => {
-                    this.$router.push("/books");
+                    eventBus.$emit("triggerCloseModal");
                 })
                 .catch((error) => {
+                    console.log(error);
+                    this.state.serverError.status = true;
+                    this.state.serverError.errors = error.response.data.errors;
+                });
+        },
+        async updateBook(id) {
+            console.log(id);
+            if (!id) {
+                return false;
+            }
+            this.v$.$reset();
+            const isFormCorrect = await this.v$.$validate();
+            if (!isFormCorrect) return;
+            axios
+                .put(`/api/books/${id}`, {
+                    name: this.state.name,
+                    author_id: this.state.author_id,
+                    category_id: this.state.category_id,
+                    publication_date: this.state.publication_date,
+                    user_id: this.state.user_id,
+                })
+                .then((response) => {
+                    this.$emit("updated");
+                    eventBus.$emit("triggerCloseModal");
+                })
+                .catch((error) => {
+                    console.log(error);
                     this.state.serverError.status = true;
                     this.state.serverError.errors = error.response.data.errors;
                 });

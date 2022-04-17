@@ -26,22 +26,6 @@
                 <div class="modal-body">
                     <slot />
                 </div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-danger"
-                        data-bs-dismiss="modal"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        @click="continueHandler"
-                        class="btn btn-success"
-                    >
-                        Continue
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -89,11 +73,6 @@ export default {
         eventBus.$on("triggerCloseModal", (data) => {
             this.modal.hide();
         });
-    },
-    methods: {
-        continueHandler() {
-            eventBus.$emit("continueClicked");
-        },
     },
 };
 </script>

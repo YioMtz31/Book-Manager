@@ -2,8 +2,13 @@
     <main-component>
         <template v-slot:content>
             <portal to="tableActions">
-                <div class="">
-                    <router-link :to="'/category'"> Add Category </router-link>
+                <div class="btn btn-outline-primary">
+                    <router-link
+                        :to="'/category'"
+                        style="text-decoration: none"
+                    >
+                        Add Category
+                    </router-link>
                 </div>
             </portal>
             <portal to="searchbox">

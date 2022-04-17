@@ -6,34 +6,41 @@
         <div class="position-sticky pt-3">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <router-link class="nav-link" aria-current="page" :to="'/'">
-                        <span data-feather="home"></span>
+                    <router-link
+                        class="nav-link"
+                        :class="$route.path === '/books' ? 'active' : ''"
+                        aria-current="page"
+                        :to="'/'"
+                    >
+                        <i class="bi bi-book"></i>
                         Books
                     </router-link>
                 </li>
                 <li class="nav-item">
                     <router-link
                         class="nav-link"
+                        :class="$route.path === '/authors' ? 'active' : ''"
                         aria-current="page"
                         :to="'/authors'"
                     >
-                        <span data-feather="home"></span>
+                        <i class="bi bi-person-circle"></i>
                         Authors
                     </router-link>
                 </li>
                 <li class="nav-item">
                     <router-link
-                        class="nav-link active"
+                        class="nav-link"
+                        :class="$route.path === '/categories' ? 'active' : ''"
                         aria-current="page"
                         :to="'/Categories'"
                     >
-                        <span data-feather="home"></span>
+                        <i class="bi bi-tags"></i>
                         Categories
                     </router-link>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" @click.prevent="signOut">
-                        <span data-feather="users"></span>
+                        <i class="bi bi-box-arrow-right"></i>
                         Sign Out
                     </a>
                 </li>

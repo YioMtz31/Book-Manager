@@ -23,6 +23,9 @@ export default {
             type: String,
             default: "",
         },
+        selected: {
+            default: "",
+        },
     },
     data() {
         return {
@@ -36,6 +39,19 @@ export default {
                 this.$emit("optionSelected", this.selectedOption);
             },
         },
+    },
+    mounted() {
+        axios
+            .get(`${this.url}/list`)
+            .then((response) => {
+                this.options = response.data.data;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        if (this.selected) {
+            this.selectedOption = this.selected;
+        }
     },
     methods: {
         onSearch(search, loading) {

@@ -16,7 +16,7 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $columns = ['id','name','author_id','category_id','user_id','publication_date'];
+        $columns = ['id','name','author_id','category_id','publication_date','user_id'];
         $column = $request->column;
         $dir = $request->dir;
         $searchValue = $request->search;
@@ -54,6 +54,7 @@ class BookController extends Controller
     {
         $data = request()->validate([
             'name' => 'required',
+            'name' => 'unique:App\Models\Book,name',
             'author_id' => 'required',
             'category_id' => 'required',
             'publication_date' => 'required',
@@ -64,16 +65,6 @@ class BookController extends Controller
         return new BookResource($book);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
 
     /**

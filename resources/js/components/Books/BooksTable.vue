@@ -3,7 +3,9 @@
         <template v-slot:content>
             <portal to="tableActions">
                 <div class="">
-                    <router-link :to="'/book'"> Add Book </router-link>
+                    <button class="btn btn-outline-primary" @click="editBook()">
+                        Add Book
+                    </button>
                 </div>
             </portal>
             <portal to="searchbox">
@@ -57,19 +59,17 @@
                             {{ book.publication_date }}
                         </td>
                         <td>
-                            {{ book.user ? book.user.name : "" }}
+                            <span v-if="book.user" class="badge bg-secondary">{{
+                                book.user.name
+                            }}</span>
+                            <span v-else class="badge bg-success"
+                                >Available</span
+                            >
                         </td>
                         <td>
                             <div
                                 class="d-flex justify-content-between align-items-center px-2"
                             >
-                                <i
-                                    class="bi bi-person-check text-primary"
-                                    :class="book.user ? 'text-secondary' : ''"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="left"
-                                    title="Assign User"
-                                ></i>
                                 <button
                                     class="btn btn-link"
                                     data-bs-toggle="tooltip"
@@ -109,6 +109,7 @@
                     v-if="showModal"
                     :modal-data="modal"
                     @deleted="getBooks()"
+                    @updated="getBooks()"
                 ></component>
             </Modal>
         </template>
@@ -137,10 +138,12 @@ export default {
             {
                 name: "bookId",
                 label: "Book ID",
+                sortable: true,
             },
             {
                 name: "BName",
                 label: "Book Name",
+                sortable: true,
             },
             {
                 name: "bookAuthor",
@@ -153,10 +156,12 @@ export default {
             {
                 name: "bookPublicationDate",
                 label: "Publication Date",
+                sortable: true,
             },
             {
                 name: "bookUser",
-                label: "Checked out by",
+                label: "Borrowed",
+                sortable: true,
             },
             {
                 name: "actions",
@@ -254,7 +259,7 @@ export default {
             this.currentComponent = "BookForm";
             this.showModal = true;
             this.modal.title = "Edit Book";
-            this.modal.book = book;
+            this.modal.book = book ?? {};
         },
     },
 };

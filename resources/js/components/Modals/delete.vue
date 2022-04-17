@@ -1,5 +1,13 @@
 <template>
-    <p>Delete the book: {{ bookTitle }}?</p>
+    <div>
+        <p>Delete the book: {{ bookTitle }}?</p>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            Cancel
+        </button>
+        <button type="button" @click="deleteBook" class="btn btn-success">
+            Yes
+        </button>
+    </div>
 </template>
 
 <script>
@@ -21,13 +29,9 @@ export default {
             return this.modalData.book?.id;
         },
     },
-    created() {
-        eventBus.$on("continueClicked", (data) => {
-            this.delete();
-        });
-    },
+    created() {},
     methods: {
-        async delete() {
+        async deleteBook() {
             return await axios.get("/sanctum/csrf-cookie").then((response) => {
                 axios
                     .delete("/api/books/" + this.bookId)

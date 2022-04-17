@@ -21,6 +21,23 @@ class UsersController extends Controller
     }
 
 
+        /**
+     * Users list for select box
+     */
+    public function show(Request $request)
+    {
+        $searchValue = $request->search;
+        $query = User::select('id','name');
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $categories = $query->get();
+        return new UsersCollection($categories);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

@@ -46,7 +46,7 @@ class CategoryController extends Controller
                 $query->where('name','like','%'.$searchValue.'%');
             });
         }
-        $categories = $query->paginate($request->length);
+        $categories = $query->get();
         return new CategoryCollection($categories);
     }
 

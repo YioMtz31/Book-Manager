@@ -44,7 +44,7 @@ class AuthorController extends Controller
                 $query->where('name','like','%'.$searchValue.'%');
             });
         }
-        $authors = $query->paginate($request->length);
+        $authors = $query->get();
         return new AuthorCollection($authors);
     }
 

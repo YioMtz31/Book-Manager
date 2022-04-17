@@ -2,8 +2,8 @@
     <main-component>
         <template v-slot:content>
             <portal to="tableActions">
-                <div class="">
-                    <router-link class="author-link" :to="'/author'">
+                <div class="btn btn-outline-primary">
+                    <router-link style="text-decoration: none" :to="'/author'">
                         Add Author
                     </router-link>
                 </div>

@@ -12,7 +12,7 @@
                             class="d-flex align-items-center justify-content-start"
                         >
                             <div>{{ column.label }}</div>
-                            <div class="ms-2">
+                            <div class="ms-2" v-if="column.sortable">
                                 <i
                                     class="fs-6"
                                     :style="'cursor:pointer;'"
