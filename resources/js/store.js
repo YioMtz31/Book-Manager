@@ -11,6 +11,7 @@ let initialState = () => {
         user_id: "",
         pageTitle: "",
         category: {},
+        author: {},
     };
 };
 // Create a new store instance.
@@ -22,6 +23,7 @@ const store = new Vuex.Store({
             user_id: "",
             pageTitle: "",
             category: {},
+            author: {},
         };
     },
     mutations: {
@@ -49,6 +51,12 @@ const store = new Vuex.Store({
         },
         clearCategoryToEdit(state) {
             state.category = {};
+        },
+        setAuthorToEdit(state, value) {
+            state.author = value;
+        },
+        clearAuthorToEdit(state) {
+            state.author = {};
         },
     },
     actions: {

@@ -126,7 +126,6 @@ export default {
     },
     mounted() {
         this.$store.commit("setPageTitle", "Add New Category");
-        console.log(_isEmpty(this.$store.state.category));
         if (!_isEmpty(this.$store.state.category)) {
             this.state.id = this.$store.state.category.id;
             this.state.name = this.$store.state.category.name;

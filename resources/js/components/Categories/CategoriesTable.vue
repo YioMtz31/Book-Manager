@@ -67,7 +67,7 @@
                                     class="btn btn-link"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="left"
-                                    title="Assign User"
+                                    title="Edit Category"
                                     @click="editCategory(category)"
                                 >
                                     <i

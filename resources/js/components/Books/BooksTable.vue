@@ -100,7 +100,7 @@
                                     class="btn btn-link"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="left"
-                                    title="Assign User"
+                                    title="Edit Book"
                                     @click="editBook(book)"
                                 >
                                     <i
@@ -111,7 +111,7 @@
                                     class="btn btn-link"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="left"
-                                    title="Assign User"
+                                    title="Delete Book"
                                     @click="deleteBook(book)"
                                 >
                                     <i class="bi bi-trash text-danger"></i>

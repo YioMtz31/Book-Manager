@@ -54,6 +54,7 @@ import MainComponent from "../MainComponent.vue";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { reactive, watch } from "@vue/composition-api";
+import _isEmpty from "lodash/fp/isEmpty";
 
 export default {
     components: {
@@ -61,6 +62,7 @@ export default {
     },
     setup() {
         const state = reactive({
+            id: "",
             name: "",
             serverError: {
                 status: false,
@@ -86,6 +88,10 @@ export default {
     },
     mounted() {
         this.$store.commit("setPageTitle", "Add New Author");
+        if (!_isEmpty(this.$store.state.author)) {
+            this.state.id = this.$store.state.author.id;
+            this.state.name = this.$store.state.author.name;
+        }
     },
     methods: {
         async submitForm() {
@@ -93,8 +99,29 @@ export default {
             const isFormCorrect = await this.v$.$validate();
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (!isFormCorrect) return;
+            if (!this.state.id) {
+                this.createAuthor();
+            } else {
+                this.updateAuthor(this.state.id);
+            }
+        },
+        async createAuthor() {
             axios
                 .post("/api/author", {
+                    name: this.state.name,
+                })
+                .then((response) => {
+                    this.$router.push("/authors");
+                })
+                .catch((error) => {
+                    this.state.serverError.status = true;
+                    this.state.serverError.message =
+                        error.response.data.message;
+                });
+        },
+        async updateAuthor(id) {
+            axios
+                .put(`/api/author/${id}`, {
                     name: this.state.name,
                 })
                 .then((response) => {

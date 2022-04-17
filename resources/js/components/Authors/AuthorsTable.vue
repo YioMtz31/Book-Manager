@@ -27,7 +27,7 @@
                 :sort-key="sortKey"
                 :sort-orders="sortOrders"
                 role="region"
-                aria-label="Accepted Results"
+                aria-label="Authors Results"
                 @sort="sortBy"
             >
                 <tr v-if="loading">
@@ -51,6 +51,24 @@
                         </td>
                         <td>
                             {{ author.name }}
+                        </td>
+                        <td>
+                            <div
+                                v-if="$store.state.isAdmin"
+                                class="d-flex justify-content-between align-items-center px-2"
+                            >
+                                <button
+                                    class="btn btn-link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Edit Author"
+                                    @click="editAuthor(author)"
+                                >
+                                    <i
+                                        class="bi bi-pencil-square text-success"
+                                    ></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -85,6 +103,10 @@ export default {
                 name: "AuthorName",
                 label: "Author Name",
             },
+            {
+                name: "actions",
+                label: "Actions",
+            },
         ];
         columns.forEach((column) => {
             sortOrders[column.name] = -1;
@@ -117,6 +139,7 @@ export default {
     },
     created() {
         this.$store.commit("setPageTitle", "Authors");
+        this.$store.commit("clearAuthorToEdit");
         this.getAuthors();
     },
     methods: {
@@ -163,6 +186,10 @@ export default {
         },
         getIndex(array, key, value) {
             return array.findIndex((i) => i[key] == value);
+        },
+        editAuthor(author) {
+            this.$store.commit("setAuthorToEdit", author);
+            this.$router.push("/author");
         },
     },
 };
