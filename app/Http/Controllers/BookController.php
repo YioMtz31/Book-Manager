@@ -52,6 +52,10 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $data = request()->validate([
             'name' => 'required|unique:App\Models\Book,name',
             'author_id' => 'required',
@@ -75,15 +79,25 @@ class BookController extends Controller
      */
     public function update(Book $book)
     {
-        $data = request()->validate([
-            'name' => 'required',
-            'author_id' => 'required',
-            'category_id' => 'required',
-            'publication_date' => 'required',
-            'user_id' =>''
-        ]);
+        $user = auth()->user();
+        if($user->is_admin){
+            $data = request()->validate([
+                'name' => 'required',
+                'author_id' => 'required',
+                'category_id' => 'required',
+                'publication_date' => 'required',
+                'user_id' =>''
+            ]);
+            $book->update($data);
+        }else{
+            $data = request()->validate([
+                'user_id' =>'required|integer'
+            ]);
+            $book->update(['user_id',$data->user_id]);
+        }
 
-        $book->update($data);
+
+
         return new BookResource($book);
     }
 
@@ -95,6 +109,10 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $id = intval($id);
         $book = Book::find($id);
         return $response = $book->delete();

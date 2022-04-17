@@ -56,6 +56,10 @@ class AuthorController extends Controller
      */
     public function store()
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $data = request()->validate([
             'name' => 'required|unique:App\Models\Author,name'
         ]);
@@ -72,6 +76,10 @@ class AuthorController extends Controller
      */
     public function update(Author $author)
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $data = request()->validate([
             'name' => 'required'
         ]);

@@ -50,6 +50,10 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $data = request()->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [

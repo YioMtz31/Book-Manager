@@ -58,6 +58,11 @@ class CategoryController extends Controller
     */
    public function store(Request $request)
    {
+    $user = auth()->user();
+    if(!$user->is_admin){
+        return false;
+    }
+
     $data = request()->validate([
         'name' => 'required|unique:App\Models\Category,name',
         'description' => 'required'
@@ -75,6 +80,10 @@ class CategoryController extends Controller
      */
     public function update(Category $category)
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $data = request()->validate([
             'name' => 'required',
             'description' => 'required'
@@ -92,6 +101,10 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
+        $user = auth()->user();
+        if(!$user->is_admin){
+            return false;
+        }
         $category = Category::find($id);
         $response = $category->delete();
         return $response;
