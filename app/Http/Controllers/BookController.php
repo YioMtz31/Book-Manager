@@ -93,7 +93,8 @@ class BookController extends Controller
             $data = request()->validate([
                 'user_id' =>'required|integer'
             ]);
-            $book->update(['user_id',$data->user_id]);
+
+            $book->update($data);
         }
 
 
