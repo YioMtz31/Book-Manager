@@ -18,9 +18,21 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $columns = ['id','name'];
+        $column = $request->column;
+        $dir = $request->dir;
+        $searchValue = $request->search;
+
+        $query = User::select('id','name','email','is_admin','is_active')->orderBy($columns[$column],$dir);
+
+        if($searchValue){
+            $query->where(function($query) use ($searchValue){
+                $query->where('name','like','%'.$searchValue.'%');
+            });
+        }
+        $users = $query->paginate($request->length);
         return new UsersCollection($users);
     }
 

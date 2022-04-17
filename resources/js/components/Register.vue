@@ -98,7 +98,7 @@
                     <div class="form-floating mb-2">
                         <div class="form-check">
                             <input
-                                v-model.trim="state.checkbox"
+                                v-model.trim="state.is_admin"
                                 class="form-check-input"
                                 type="checkbox"
                                 id="flexCheckChecked"
@@ -108,6 +108,17 @@
                                 for="flexCheckChecked"
                             >
                                 Is Admin?
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                v-model.trim="state.is_active"
+                                class="form-check-input"
+                                type="checkbox"
+                                id="activeState"
+                            />
+                            <label class="form-check-label" for="activeState">
+                                Active
                             </label>
                         </div>
                     </div>
@@ -130,16 +141,19 @@ import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import { reactive } from "@vue/composition-api";
 import MainComponent from "./MainComponent.vue";
+import _isEmpty from "lodash/fp/isEmpty";
 
 export default {
     components: { MainComponent },
     setup() {
         const state = reactive({
+            id: "",
             name: "",
             email: "",
             password: "",
             password_confirmation: "",
-            checkbox: false,
+            is_admin: false,
+            is_active: true,
         });
         const rules = {
             name: { required },
@@ -154,6 +168,13 @@ export default {
     },
     mounted() {
         this.$store.commit("setPageTitle", "Register New User");
+        if (!_isEmpty(this.$store.state.user)) {
+            this.state.id = this.$store.state.user.id;
+            this.state.name = this.$store.state.user.name;
+            this.state.email = this.$store.state.user.email;
+            this.state.is_admin = this.$store.state.user.is_admin;
+            this.state.is_active = this.$store.state.user.is_active;
+        }
     },
     methods: {
         async submitForm() {
@@ -161,13 +182,38 @@ export default {
             const isFormCorrect = await this.v$.$validate();
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (!isFormCorrect) return;
+            if (!this.state.id) {
+                this.createUser();
+            } else {
+                this.updateUser(this.state.id);
+            }
+        },
+        createUser() {
             axios
                 .post("/api/users", {
                     name: this.state.name,
                     email: this.state.email,
                     password: this.state.password,
                     password_confirmation: this.state.password_confirmation,
-                    is_admin: this.state.checkbox,
+                    is_admin: this.state.is_admin,
+                    is_active: this.state.is_active,
+                })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        updateUser(id) {
+            axios
+                .put(`/api/users/${id}`, {
+                    name: this.state.name,
+                    email: this.state.email,
+                    password: this.state.password,
+                    password_confirmation: this.state.password_confirmation,
+                    is_admin: this.state.is_admin,
+                    is_active: this.state.is_active,
                 })
                 .then(function (response) {
                     console.log(response);

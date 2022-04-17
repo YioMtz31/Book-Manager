@@ -1,0 +1,198 @@
+<template>
+    <main-component>
+        <template v-slot:content>
+            <portal to="tableActions">
+                <div class="btn btn-outline-primary">
+                    <router-link
+                        style="text-decoration: none"
+                        :to="'/register'"
+                    >
+                        Add User
+                    </router-link>
+                </div>
+            </portal>
+            <portal to="searchbox">
+                <label class="form-label">
+                    <span class="visually-hidden">
+                        <span>Search</span>
+                    </span>
+                    <input
+                        v-model="tableData.search"
+                        class="form-control w-100 d-block"
+                        type="text"
+                        placeholder="Search"
+                        @input="getUsers()"
+                    />
+                </label>
+            </portal>
+            <DataTables
+                :columns="columns"
+                :sort-key="sortKey"
+                :sort-orders="sortOrders"
+                role="region"
+                aria-label="Users Results"
+                @sort="sortBy"
+            >
+                <tr v-if="loading">
+                    <td>
+                        <div class="w-100">Loading Please Wait...</div>
+                    </td>
+                    <td>
+                        <div class="w-100"></div>
+                    </td>
+                </tr>
+                <p v-else-if="users.length == 0" class="text-danger">
+                    No records found!
+                </p>
+                <tbody v-else>
+                    <tr
+                        v-for="(user, index) in users"
+                        :key="user.id + 'i' + index"
+                    >
+                        <td>
+                            {{ user.id }}
+                        </td>
+                        <td>
+                            {{ user.name }}
+                        </td>
+                        <td>
+                            <div
+                                class="d-flex justify-content-between align-items-center px-2"
+                            >
+                                <button
+                                    class="btn btn-link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Edit User"
+                                    @click="editUser(user)"
+                                >
+                                    <i
+                                        class="bi bi-pencil-square text-success"
+                                    ></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </DataTables>
+            <Pagination
+                :pagination="pagination"
+                @prev="getUsers(pagination.prevPageUrl)"
+                @next="getUsers(pagination.nextPageUrl)"
+            />
+        </template>
+    </main-component>
+</template>
+
+<script>
+import MainComponent from "../MainComponent.vue";
+import DataTables from "../datatables/DataTables.vue";
+import Pagination from "../datatables/Pagination.vue";
+export default {
+    components: {
+        DataTables,
+        Pagination,
+        MainComponent,
+    },
+    data() {
+        let sortOrders = {};
+        let columns = [
+            {
+                name: "UserId",
+                label: "User ID",
+            },
+            {
+                name: "UserName",
+                label: "User Name",
+            },
+            {
+                name: "actions",
+                label: "Actions",
+            },
+        ];
+        columns.forEach((column) => {
+            sortOrders[column.name] = -1;
+        });
+        return {
+            loading: true,
+            users: [],
+            columns: columns,
+            sortKey: "col1",
+            sortOrders: sortOrders,
+            perPage: ["10", "20", "30"],
+            tableData: {
+                draw: 0,
+                length: 15,
+                search: "",
+                column: 0,
+                dir: "asc",
+            },
+            pagination: {
+                lastPage: "",
+                currentPage: "",
+                total: "",
+                lastPageUrl: "",
+                nextPageUrl: "",
+                prevPageUrl: "",
+                from: "",
+                to: "",
+            },
+        };
+    },
+    created() {
+        this.$store.commit("setPageTitle", "Register Users");
+        this.$store.commit("clearUserToEdit");
+        this.getUsers();
+    },
+    methods: {
+        async getUsers(url = "/api/users") {
+            this.tableData.draw++;
+            return await axios
+                .get(url, {
+                    params: this.tableData,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                .then((response) => {
+                    if (
+                        parseInt(this.tableData.draw) ===
+                        parseInt(response.data.draw)
+                    ) {
+                        this.users = response.data.data;
+                        this.configPagination(response);
+                        this.loading = false;
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        configPagination(response) {
+            let data = response.data;
+            this.pagination.lastPage = data.meta.last_page;
+            this.pagination.currentPage = data.meta.current_page;
+            this.pagination.total = data.meta.total;
+            this.pagination.lastPageUrl = data.links.last;
+            this.pagination.nextPageUrl = data.links.next;
+            this.pagination.prevPageUrl = data.links.prev;
+            this.pagination.from = data.meta.from;
+            this.pagination.to = data.meta.to;
+        },
+        sortBy(key) {
+            this.sortKey = key;
+            this.sortOrders[key] = this.sortOrders[key] * -1;
+            this.tableData.column = this.getIndex(this.columns, "name", key);
+            this.tableData.dir = this.sortOrders[key] === 1 ? "asc" : "desc";
+            this.getUsers();
+        },
+        getIndex(array, key, value) {
+            return array.findIndex((i) => i[key] == value);
+        },
+        editUser(user) {
+            this.$store.commit("setUserToEdit", user);
+            this.$router.push("/register");
+        },
+    },
+};
+</script>

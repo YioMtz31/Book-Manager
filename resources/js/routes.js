@@ -5,6 +5,7 @@ const Authors = () => import("./components/Authors/AuthorsTable");
 const Author = () => import("./components/Authors/CreateAuthor");
 const Categories = () => import("./components/Categories/CategoriesTable");
 const Category = () => import("./components/Categories/CreateCategory");
+const UsersTable = () => import("./components/Users/UsersTable");
 import store from "./store";
 
 const routes = [
@@ -20,6 +21,17 @@ const routes = [
         name: "login",
         path: "/login",
         component: Login,
+    },
+    {
+        name: "Users",
+        path: "/users",
+        component: UsersTable,
+        beforeEnter: (to, from, next) => {
+            if (store.state.isAdmin) {
+                next();
+            }
+            return false;
+        },
     },
     {
         name: "Register",

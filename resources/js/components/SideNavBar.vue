@@ -41,12 +41,12 @@
                 <li v-if="$store.state.isAdmin" class="nav-item">
                     <router-link
                         class="nav-link"
-                        :class="$route.path === '/register' ? 'active' : ''"
+                        :class="$route.path === '/users' ? 'active' : ''"
                         aria-current="page"
-                        :to="'/register'"
+                        :to="'/users'"
                     >
                         <i class="bi bi-tags"></i>
-                        Register User
+                        Users
                     </router-link>
                 </li>
                 <li class="nav-item">
