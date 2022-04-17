@@ -57,8 +57,7 @@ class AuthorController extends Controller
     public function store()
     {
         $data = request()->validate([
-            'name' => 'required',
-            'name' => 'unique:App\Models\Author,name'
+            'name' => 'required|unique:App\Models\Author,name'
         ]);
 
         $author = Author::create($data);

@@ -10,10 +10,26 @@ use App\Http\Resources\BooksCollention;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 class BookManagementTest extends TestCase
 {
      use RefreshDatabase;
+
+            /**
+     * Sign in the given user or create new one if not provided.
+     *
+     * @param $user \App\User
+     *
+     * @return \App\User
+     */
+    protected function signIn($user = null)
+    {
+        $user = $user ?: User::factory()->create();
+        Sanctum::actingAs($user, ['*']);
+        return $user;
+    }
 
     /**
      * Can get all books
@@ -23,7 +39,7 @@ class BookManagementTest extends TestCase
     public function test_a_list_of_books_can_be_retrieved()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         $books = Book::factory()
             ->count(2)
             ->for(Author::factory()->state([
@@ -40,7 +56,7 @@ class BookManagementTest extends TestCase
         $this->assertCount(2,Book::all());
         $books = Book::all();
 
-        $response = $this->get('/api/books');
+        $response = $this->get('/api/books?draw=1&length=15&search=&column=0&dir=asc');
 
             $response->assertJson([
                 "data"=> [
@@ -64,7 +80,7 @@ class BookManagementTest extends TestCase
     public function test_a_book_can_be_created()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         $author = $this->post('/api/author',[
             'name' => 'Mark Twain',
         ]);
@@ -94,7 +110,7 @@ class BookManagementTest extends TestCase
     public function test_a_book_can_be_edited()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         $author = $this->post('/api/author',[
             'name' => 'Mark Twain',
         ]);
@@ -154,7 +170,7 @@ class BookManagementTest extends TestCase
     public function test_can_delete_book()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         Book::factory()
             ->count(2)
             ->for(Author::factory()->state([
@@ -179,6 +195,7 @@ class BookManagementTest extends TestCase
 
     public function test_book_fields_are_required()
     {
+        $this->signIn();
         $response =   $this->post('/api/books',[
             'name' => '',
             'author_id' => '',

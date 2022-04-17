@@ -3,14 +3,31 @@
 namespace Tests\Feature;
 
 use App\Models\Author;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Laravel\Sanctum\Sanctum;
 
 class AuthorTest extends TestCase
 {
 
     use RefreshDatabase;
+
+
+     /**
+     * Sign in the given user or create new one if not provided.
+     *
+     * @param $user \App\User
+     *
+     * @return \App\User
+     */
+    protected function signIn($user = null)
+    {
+        $user = $user ?: User::factory()->create();
+        Sanctum::actingAs($user, ['*']);
+        return $user;
+    }
 
     /**
      * can get a list of all authors
@@ -21,10 +38,12 @@ class AuthorTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
+        $this->signIn();
+
         Author::factory()->count(2)->create();
         $this->assertDatabaseCount('authors', 2);
 
-        $response = $this->get('api/author');
+        $response = $this->get('api/author?draw=1&length=15&search=&column=0&dir=asc');
         $authors = Author::all();
         $response->assertOk();
         $response->assertJson([
@@ -50,7 +69,7 @@ class AuthorTest extends TestCase
     public function test_can_create_author()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         $response = $this->post('api/author',[
             'name' => 'Mart Twain'
         ]);
@@ -75,7 +94,7 @@ class AuthorTest extends TestCase
     public function test_can_update_author()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         Author::factory()->create();
         $this->assertDatabaseCount('authors', 1);
 
@@ -101,11 +120,13 @@ class AuthorTest extends TestCase
 
     public function test_author_name_is_required()
     {
+        $this->signIn();
+        $this->assertAuthenticated($guard = null);
         $response = $this->post('api/author',[
             'name' => ''
         ]);
 
-        $response->assertSessionHasErrors(['name']);
+        $response->assertInvalid(['name']);
     }
 
 }

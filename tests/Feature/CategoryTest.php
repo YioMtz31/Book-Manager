@@ -6,10 +6,26 @@ use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 class CategoryTest extends TestCase
 {
     use RefreshDatabase;
+
+         /**
+     * Sign in the given user or create new one if not provided.
+     *
+     * @param $user \App\User
+     *
+     * @return \App\User
+     */
+    protected function signIn($user = null)
+    {
+        $user = $user ?: User::factory()->create();
+        Sanctum::actingAs($user, ['*']);
+        return $user;
+    }
 
     /**
      * can get a list of all categories
@@ -19,11 +35,11 @@ class CategoryTest extends TestCase
     public function test_can_get_a_list_of_categories()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         Category::factory()->count(2)->create();
         $this->assertDatabaseCount('categories', 2);
 
-        $response = $this->get('api/category');
+        $response = $this->get('api/category?draw=1&length=15&search=&column=0&dir=asc');
         $categories = Category::all();
         $response->assertOk();
         $response->assertJson([
@@ -51,7 +67,7 @@ class CategoryTest extends TestCase
     public function test_can_create_Category()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         $response = $this->post('api/category',[
             'name' => 'History',
             'description' => 'Historical lessons',
@@ -78,7 +94,7 @@ class CategoryTest extends TestCase
     public function test_can_update_Category()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         Category::factory()->create();
         $this->assertDatabaseCount('categories', 1);
 
@@ -113,7 +129,7 @@ class CategoryTest extends TestCase
     public function test_can_delete_Category()
     {
         $this->withoutExceptionHandling();
-
+        $this->signIn();
         Category::factory()->count(5)->create();
         $this->assertDatabaseCount('categories', 5);
 
@@ -128,6 +144,7 @@ class CategoryTest extends TestCase
 
     public function test_category_name_is_required()
     {
+        $this->signIn();
         $response = $this->post('api/category',[
             'name' => '',
             'description' => "sample description"
@@ -138,6 +155,7 @@ class CategoryTest extends TestCase
 
     public function test_category_description_is_required()
     {
+        $this->signIn();
         $response = $this->post('api/category',[
             'name' => 'Sample name',
             'description' =>''
