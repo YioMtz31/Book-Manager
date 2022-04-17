@@ -16,7 +16,7 @@
                         Books
                     </router-link>
                 </li>
-                <li class="nav-item">
+                <li v-if="$store.state.isAdmin" class="nav-item">
                     <router-link
                         class="nav-link"
                         :class="$route.path === '/authors' ? 'active' : ''"
@@ -27,7 +27,7 @@
                         Authors
                     </router-link>
                 </li>
-                <li class="nav-item">
+                <li v-if="$store.state.isAdmin" class="nav-item">
                     <router-link
                         class="nav-link"
                         :class="$route.path === '/categories' ? 'active' : ''"
@@ -36,6 +36,17 @@
                     >
                         <i class="bi bi-tags"></i>
                         Categories
+                    </router-link>
+                </li>
+                <li v-if="$store.state.isAdmin" class="nav-item">
+                    <router-link
+                        class="nav-link"
+                        :class="$route.path === '/register' ? 'active' : ''"
+                        aria-current="page"
+                        :to="'/register'"
+                    >
+                        <i class="bi bi-tags"></i>
+                        Register User
                     </router-link>
                 </li>
                 <li class="nav-item">
@@ -50,6 +61,7 @@
 </template>
 
 <script>
+import store from "../store";
 export default {
     methods: {
         async signOut() {

@@ -5,6 +5,7 @@ const Authors = () => import("./components/Authors/AuthorsTable");
 const Author = () => import("./components/Authors/CreateAuthor");
 const Categories = () => import("./components/Categories/CategoriesTable");
 const Category = () => import("./components/Categories/CreateCategory");
+import store from "./store";
 
 const routes = [
     {
@@ -24,26 +25,56 @@ const routes = [
         name: "Register",
         path: "/register",
         component: Register,
+        beforeEnter: (to, from, next) => {
+            if (store.state.isAdmin) {
+                next();
+            }
+            return false;
+        },
     },
     {
         name: "Authors",
         path: "/authors",
         component: Authors,
+        beforeEnter: (to, from, next) => {
+            if (store.state.isAdmin) {
+                next();
+            }
+            return false;
+        },
     },
     {
         name: "Author",
         path: "/author",
         component: Author,
+        beforeEnter: (to, from, next) => {
+            if (store.state.isAdmin) {
+                next();
+            }
+            return false;
+        },
     },
     {
         name: "Categories",
         path: "/categories",
         component: Categories,
+        beforeEnter: (to, from, next) => {
+            if (store.state.isAdmin) {
+                next();
+            }
+            return false;
+        },
     },
     {
         name: "Category",
         path: "/Category",
         component: Category,
+        beforeEnter: (to, from, next) => {
+            if (store.state.isAdmin) {
+                next();
+            }
+            return false;
+        },
     },
 ];
 

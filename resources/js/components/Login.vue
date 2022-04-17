@@ -102,6 +102,11 @@ export default {
                     .then((response) => {
                         if (response.status === 200) {
                             this.$store.commit("setIsAuthenticated", true);
+                            this.$store.commit(
+                                "setIsAdmin",
+                                response.data.is_admin
+                            );
+                            this.$store.commit("setUserId", response.data.user);
                             this.$router.push("/");
                         }
                     })

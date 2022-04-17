@@ -2,7 +2,7 @@
     <main-component>
         <template v-slot:content>
             <portal to="tableActions">
-                <div class="">
+                <div v-if="$store.state.isAdmin">
                     <button class="btn btn-outline-primary" @click="editBook()">
                         Add Book
                     </button>
@@ -68,6 +68,7 @@
                         </td>
                         <td>
                             <div
+                                v-if="$store.state.isAdmin"
                                 class="d-flex justify-content-between align-items-center px-2"
                             >
                                 <button
@@ -89,6 +90,23 @@
                                     @click="deleteBook(book)"
                                 >
                                     <i class="bi bi-trash text-danger"></i>
+                                </button>
+                            </div>
+                            <div
+                                v-else
+                                class="d-flex justify-content-between align-items-center px-2"
+                            >
+                                <button
+                                    v-if="!book.user"
+                                    class="btn btn-link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Borrow Book"
+                                    @click="checkOut(book)"
+                                >
+                                    <i
+                                        class="bi bi-pencil-square text-success"
+                                    ></i>
                                 </button>
                             </div>
                         </td>
@@ -123,6 +141,7 @@ import Pagination from "../datatables/Pagination.vue";
 import Modal from "../Modal.vue";
 import DeleteComponent from "../Modals/delete.vue";
 import BookForm from "../Modals/BookForm.vue";
+import CheckoutForm from "../Modals/CheckoutForm.vue";
 export default {
     components: {
         DataTables,
@@ -131,6 +150,7 @@ export default {
         Modal,
         DeleteComponent,
         BookForm,
+        CheckoutForm,
     },
     data() {
         let sortOrders = {};
@@ -260,6 +280,12 @@ export default {
             this.showModal = true;
             this.modal.title = "Edit Book";
             this.modal.book = book ?? {};
+        },
+        checkOut(book) {
+            this.currentComponent = "CheckoutForm";
+            this.showModal = true;
+            this.modal.title = "Burrow Book";
+            this.modal.book = book;
         },
     },
 };

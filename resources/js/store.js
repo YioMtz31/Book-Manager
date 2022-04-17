@@ -7,6 +7,8 @@ Vue.use(Vuex);
 let initialState = () => {
     return {
         isAuthenticated: false,
+        isAdmin: false,
+        user_id: "",
         pageTitle: "",
     };
 };
@@ -15,6 +17,8 @@ const store = new Vuex.Store({
     state() {
         return {
             isAuthenticated: false,
+            isAdmin: false,
+            user_id: "",
             pageTitle: "",
         };
     },
@@ -28,6 +32,12 @@ const store = new Vuex.Store({
         },
         setIsAuthenticated(state, value) {
             state.isAuthenticated = value;
+        },
+        setIsAdmin(state, value) {
+            state.isAdmin = value;
+        },
+        setUserId(state, value) {
+            state.user_id = value;
         },
         setPageTitle(state, value) {
             state.pageTitle = value;

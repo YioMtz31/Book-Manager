@@ -6,6 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UsersCollection;
 use App\Http\Resources\UsersResource;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Laravel\Fortify\Rules\Password;
 
 class UsersController extends Controller
 {
@@ -47,10 +51,23 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $data = request()->validate([
-            'name' => 'required'
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique(User::class),
+            ],
+            'password' => ['required', 'string', new Password, 'confirmed']
         ]);
 
-        $user = User::create($data);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'is_admin' => $request->is_admin,
+        ]);
         return new UsersResource($user);
     }
 
