@@ -25,6 +25,18 @@ class BookController extends Controller
 
         $query = Book::select('id','name','author_id','category_id','user_id','publication_date')->orderBy($columns[$column],$dir);
 
+        if($categoryFilter){
+            $query->where(function($query) use ($categoryFilter){
+                $query->where('category_id',$categoryFilter);
+            });
+        }
+
+        if($authorFilter){
+            $query->where(function($query) use ($authorFilter){
+                $query->where('author_id',$authorFilter);
+            });
+        }
+
         if($searchValue){
             $query->where(function($query) use ($searchValue){
                 $query->where('name','like','%'.$searchValue.'%');
@@ -40,17 +52,6 @@ class BookController extends Controller
             });
             $query->orWhereHas('user', function($query) use ($searchValue){
                 $query->where('name','like','%'.$searchValue.'%');
-            });
-        }
-        if($categoryFilter){
-            $query->where(function($query) use ($categoryFilter){
-                $query->where('category_id',$categoryFilter);
-            });
-        }
-
-        if($authorFilter){
-            $query->where(function($query) use ($authorFilter){
-                $query->where('author_id',$authorFilter);
             });
         }
 

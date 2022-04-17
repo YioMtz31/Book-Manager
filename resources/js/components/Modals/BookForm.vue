@@ -227,7 +227,6 @@ export default {
                 });
         },
         async updateBook(id) {
-            console.log(id);
             if (!id) {
                 return false;
             }

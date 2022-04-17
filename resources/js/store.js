@@ -10,6 +10,7 @@ let initialState = () => {
         isAdmin: false,
         user_id: "",
         pageTitle: "",
+        category: {},
     };
 };
 // Create a new store instance.
@@ -20,6 +21,7 @@ const store = new Vuex.Store({
             isAdmin: false,
             user_id: "",
             pageTitle: "",
+            category: {},
         };
     },
     mutations: {
@@ -41,6 +43,12 @@ const store = new Vuex.Store({
         },
         setPageTitle(state, value) {
             state.pageTitle = value;
+        },
+        setCategoryToEdit(state, value) {
+            state.category = value;
+        },
+        clearCategoryToEdit(state) {
+            state.category = {};
         },
     },
     actions: {

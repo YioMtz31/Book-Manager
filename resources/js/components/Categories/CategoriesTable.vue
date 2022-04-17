@@ -58,6 +58,24 @@
                         <td>
                             {{ category.description }}
                         </td>
+                        <td>
+                            <div
+                                v-if="$store.state.isAdmin"
+                                class="d-flex justify-content-between align-items-center px-2"
+                            >
+                                <button
+                                    class="btn btn-link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Assign User"
+                                    @click="editCategory(category)"
+                                >
+                                    <i
+                                        class="bi bi-pencil-square text-success"
+                                    ></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </DataTables>
@@ -95,6 +113,10 @@ export default {
                 name: "categoryDescription",
                 label: "Category Description",
             },
+            {
+                name: "actions",
+                label: "Actions",
+            },
         ];
         columns.forEach((column) => {
             sortOrders[column.name] = -1;
@@ -127,6 +149,7 @@ export default {
     },
     created() {
         this.$store.commit("setPageTitle", "Categories");
+        this.$store.commit("clearCategoryToEdit");
         this.getCategories();
     },
     methods: {
@@ -173,6 +196,10 @@ export default {
         },
         getIndex(array, key, value) {
             return array.findIndex((i) => i[key] == value);
+        },
+        editCategory(category) {
+            this.$store.commit("setCategoryToEdit", category);
+            this.$router.push("/category");
         },
     },
 };

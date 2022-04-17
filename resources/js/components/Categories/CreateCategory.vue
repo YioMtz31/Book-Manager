@@ -90,6 +90,7 @@ import MainComponent from "../MainComponent.vue";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { reactive, watch } from "@vue/composition-api";
+import _isEmpty from "lodash/fp/isEmpty";
 
 export default {
     components: {
@@ -97,6 +98,7 @@ export default {
     },
     setup() {
         const state = reactive({
+            id: "",
             name: "",
             description: "",
             serverError: {
@@ -124,6 +126,12 @@ export default {
     },
     mounted() {
         this.$store.commit("setPageTitle", "Add New Category");
+        console.log(_isEmpty(this.$store.state.category));
+        if (!_isEmpty(this.$store.state.category)) {
+            this.state.id = this.$store.state.category.id;
+            this.state.name = this.$store.state.category.name;
+            this.state.description = this.$store.state.category.description;
+        }
     },
     methods: {
         async submitForm() {
@@ -131,8 +139,29 @@ export default {
             const isFormCorrect = await this.v$.$validate();
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (!isFormCorrect) return;
+            if (!this.state.id) {
+                this.createCategory();
+            } else {
+                this.updateCategory(this.state.id);
+            }
+        },
+        async createCategory() {
             axios
                 .post("/api/category", {
+                    name: this.state.name,
+                    description: this.state.description,
+                })
+                .then((response) => {
+                    this.$router.push("/categories");
+                })
+                .catch((error) => {
+                    this.state.serverError.status = true;
+                    this.state.serverError.errors = error.response.data.errors;
+                });
+        },
+        async updateCategory(id) {
+            axios
+                .put(`/api/category/${id}`, {
                     name: this.state.name,
                     description: this.state.description,
                 })
