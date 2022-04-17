@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Author;
+use Illuminate\Support\Facades\DB;
 
 class AuthorSeeder extends Seeder
 {
@@ -15,8 +15,11 @@ class AuthorSeeder extends Seeder
      */
     public function run()
     {
-        Author::factory()
-        ->count(50)
-        ->create();
+        DB::table('authors')->insert([
+            'name' => 'Mark Twain',
+        ]);
+        DB::table('authors')->insert([
+            'name' => 'J. K. Rowling',
+        ]);
     }
 }
