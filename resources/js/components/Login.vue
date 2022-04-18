@@ -8,6 +8,21 @@
             />
             <h1 class="h3 mb-3 fw-normal">Acme Library</h1>
 
+            <div v-if="state.serverError.status" class="text-start text-danger">
+                <div
+                    class="input-errors"
+                    v-for="(errors, index) of state.serverError.errors"
+                    :key="index"
+                >
+                    <div
+                        v-for="(error, i) of errors"
+                        :key="i"
+                        class="text-start text-danger"
+                    >
+                        {{ error }}
+                    </div>
+                </div>
+            </div>
             <div class="form-floating">
                 <input
                     v-model.trim="state.email"
@@ -73,6 +88,10 @@ export default {
         const state = reactive({
             email: "",
             password: "",
+            serverError: {
+                status: false,
+                errors: [],
+            },
         });
         const rules = {
             email: { required, email },
@@ -83,9 +102,7 @@ export default {
 
         return { state, v$ };
     },
-    mounted() {
-        console.log("login page loaded");
-    },
+
     methods: {
         async submitForm() {
             this.v$.$reset();
@@ -110,8 +127,11 @@ export default {
                             this.$router.push("/");
                         }
                     })
-                    .catch(function (error) {
+                    .catch((error) => {
                         console.log(error);
+                        this.state.serverError.status = true;
+                        this.state.serverError.errors =
+                            error.response.data.errors;
                     });
             });
         },
