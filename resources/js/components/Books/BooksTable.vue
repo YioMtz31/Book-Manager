@@ -84,9 +84,13 @@
                             {{ book.publication_date }}
                         </td>
                         <td>
-                            <span v-if="book.user" class="badge bg-secondary">{{
-                                book.user.name
-                            }}</span>
+                            <span v-if="book.user" class="badge bg-secondary">
+                                {{
+                                    $store.state.isAdmin
+                                        ? book.user.name
+                                        : "Not Available"
+                                }}</span
+                            >
                             <span v-else class="badge bg-success"
                                 >Available</span
                             >
