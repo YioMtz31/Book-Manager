@@ -8,6 +8,8 @@ frontend with bootstrap css.
 
 -   Laravel
 -   VueJS
+- Sanctum & Fortify
+
 
 Make sure to have `Composer` and `NPM` setup corectly in your system
 
