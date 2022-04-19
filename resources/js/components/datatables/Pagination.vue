@@ -50,23 +50,3 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-ul li.page-item button {
-    cursor: pointer;
-    text-decoration: none;
-
-    @apply py-2 px-4;
-    @apply text-blue-700 font-semibold;
-    @apply border border-blue-500 rounded bg-transparent;
-}
-ul li.page-item button:hover {
-    @apply bg-blue-500 text-white border-transparent;
-}
-ul li button.disabled-link,
-ul li button.disabled-link:hover {
-    @apply py-2 px-4 mx-2;
-    @apply bg-gray-300 rounded-l;
-    @apply text-gray-700 font-bold;
-}
-</style>
